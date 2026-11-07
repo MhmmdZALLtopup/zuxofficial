@@ -942,6 +942,225 @@ $$("#bkE").onclick=()=>{try{const o={};for(let i=0;i<localStorage.length;i++){co
 $$("#bkI").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const o=JSON.parse(t);for(const k in o)if(k.startsWith("zux-"))localStorage.setItem(k,o[k]);alert("Cadangan dimuat.");location.reload()}).catch(()=>alert("File cadangan tidak valid."))};
 if(/^#\/play\/rw-/.test(location.hash))window.go(location.hash,false);
 })();
+
+  
+(()=>{
+const $$=(s,r=document)=>r.querySelector(s),rn=(a,b)=>a+Math.random()*(b-a),ri=n=>Math.floor(Math.random()*n),fm=n=>"Rp "+Math.round(n).toLocaleString("id-ID"),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),mmss=t=>{t=Math.max(0,Math.ceil(t));return Math.floor(t/60)+":"+String(t%60).padStart(2,"0")};
+const K=8,P=110,SZ=K*P,KEY="zux-t2-zx-food";
+GAMES.push({id:"zx-food",n:"ZUXFOOD Driver Jakarta",i:"🛵",tags:["Simulasi","Manajemen","Arcade","3D"],d:"Open world 3D POV Jakarta. Terima orderan lewat HP, kejar waktu, isi bensin, beli dan modif motor, upgrade rumah.",it:[]});
+const BK=[
+{n:"Honda Supra X",p:0,v:75,a:6,tk:4,ef:1300,h:.9,c:"#c62828",wr:.33,len:1.9,ty:"b"},
+{n:"Honda Beat",p:600000,v:85,a:7,tk:4.2,ef:1500,h:1,c:"#1e88e5",wr:.3,len:1.8,ty:"m"},
+{n:"Honda Vario 160",p:1500000,v:100,a:8.5,tk:5.5,ef:1250,h:1.05,c:"#263238",wr:.31,len:1.95,ty:"m"},
+{n:"Yamaha NMax",p:3500000,v:115,a:9.5,tk:7.1,ef:1100,h:1.1,c:"#546e7a",wr:.33,len:2.05,ty:"m"},
+{n:"Kawasaki Ninja 250",p:7000000,v:150,a:12,tk:14,ef:800,h:1.2,c:"#43a047",wr:.35,len:2.1,ty:"s"}];
+const HM=[["Kamar kos",30000,.6,0],["Kontrakan",60000,.8,300000],["Rumah kecil",100000,1,1000000],["Apartemen",180000,1,3000000]];
+const PO=[{k:"home",n:"Rumah",i:1,j:1,c:"#6ff0b0"},{k:"dealer",n:"Dealer Motor",i:6,j:1,c:"#ff5a8a"},{k:"bengkel",n:"Bengkel",i:1,j:6,c:"#ffb300"},{k:"spbu",n:"SPBU",i:6,j:6,c:"#ef5350"},{k:"warteg",n:"Warteg Bahari",i:3,j:3,c:"#8bc34a"}];
+const RS=[["Warung Padang Sederhana",2,2],["Bakso Pak Kumis",5,2],["Ayam Geprek Bu Sri",2,5],["Kopi & Roti Menteng",5,5],["Soto Betawi H. Mamat",0,3],["Nasi Goreng Kebon Sirih",7,4]];
+const ST=["Jl. Sudirman","Jl. Thamrin","Jl. Kemang Raya","Jl. Gatot Subroto","Jl. Rasuna Said","Jl. Menteng Raya","Jl. Kebon Sirih","Jl. Cikini Raya","Jl. Tebet Barat"];
+const MC=["#c62828","#1e88e5","#212121","#f9a825","#43a047","#8e24aa","#eceff1"];
+const pz=(i,j)=>({x:i*P+P/2,z:j*P+4});
+
+const css=document.createElement("style");css.textContent=`
+#v-zf{position:fixed;inset:0;z-index:310;background:#000;color:#fff;font:500 13px/1.35 var(--body);touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden}
+#v-zf[hidden]{display:none}#v-zf button{font:inherit;cursor:pointer;color:#fff}
+#zfc{position:absolute;inset:0;width:100%;height:100%}
+#zfh{position:absolute;top:calc(8px + env(safe-area-inset-top));left:calc(10px + env(safe-area-inset-left));display:grid;gap:5px;width:150px}
+#zfh>*{background:rgba(10,12,30,.74);backdrop-filter:blur(6px);padding:4px 10px;border-radius:12px;border:1px solid rgba(255,255,255,.15)}
+.zb{height:6px;border-radius:6px;background:rgba(255,255,255,.18);margin-top:3px;overflow:hidden}.zb i{display:block;height:100%;width:50%}
+#zfm{position:absolute;top:calc(8px + env(safe-area-inset-top));right:calc(10px + env(safe-area-inset-right));width:116px;height:116px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:#1b2235;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+#zfbt{position:absolute;top:calc(130px + env(safe-area-inset-top));right:calc(10px + env(safe-area-inset-right));display:flex;gap:6px;flex-direction:column}
+#zfbt button{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(10,12,30,.74);font-size:17px}
+#zfn{position:absolute;top:calc(8px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:rgba(10,12,30,.8);padding:6px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.2);text-align:center;max-width:36%;display:none}
+#zfj{position:absolute;left:calc(26px + env(safe-area-inset-left));bottom:24px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);touch-action:none}
+#zfk{position:absolute;left:35px;top:35px;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.5);pointer-events:none}
+.zr{position:absolute;bottom:26px;border-radius:50%;border:0;font-size:22px;background:rgba(255,255,255,.18)!important;border:2px solid rgba(255,255,255,.35)!important}
+#zfB{right:calc(26px + env(safe-area-inset-right));width:76px;height:76px}#zfH{right:calc(116px + env(safe-area-inset-right));width:56px;height:56px}
+#zfA{position:absolute;right:calc(26px + env(safe-area-inset-right));bottom:116px;padding:12px 20px;border-radius:999px;border:0;background:var(--accent);color:#1a0610!important;font-weight:800;display:none}
+#zfsp{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:800 30px var(--head);text-shadow:0 2px 8px #000}#zfsp small{font:500 11px var(--body);margin-left:4px}
+#zft{position:absolute;top:60px;left:50%;transform:translateX(-50%);background:var(--accent2);color:#06202a;font-weight:700;padding:6px 14px;border-radius:999px;opacity:0;transition:opacity .25s;pointer-events:none;max-width:60%;text-align:center}#zft.on{opacity:1}
+#zfp{position:absolute;right:calc(12px + env(safe-area-inset-right));top:2vh;height:96vh;aspect-ratio:9/19;max-width:46vw;background:#05060a;border:3px solid #3a3d4a;border-radius:34px;padding:8px;display:none;flex-direction:column;box-shadow:0 0 0 2px #111,0 20px 60px rgba(0,0,0,.7);z-index:4;overflow:hidden}
+#zfp .isl{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:34%;height:16px;border-radius:12px;background:#000;z-index:2}
+#zfp .sb{display:flex;justify-content:space-between;padding:5px 14px 0;font-size:10px;font-weight:700;height:26px}
+#pb{flex:1;overflow:auto;background:linear-gradient(#10142e,#0b0d1e);border-radius:22px 22px 0 0;padding:8px;font-size:11px}
+#zfp .tb{display:flex;background:#12162f;border-radius:0 0 22px 22px;padding:3px 0 8px}#zfp .tb button{flex:1;background:none;border:0;font-size:15px;opacity:.55}#zfp .tb button.on{opacity:1}#zfp .tb small{display:block;font-size:8px}
+#zfp .hi{display:block;width:34%;height:4px;border-radius:4px;background:#fff;margin:2px auto 0;opacity:.7}
+.cd{background:#1b2050;border:1px solid #2d3270;border-radius:12px;padding:8px;margin-bottom:6px}.cd button,#pb>button{margin-top:5px;width:100%;padding:6px;border-radius:9px;border:0;background:#00a86b;font-weight:700}
+#zfo{position:absolute;inset:0;display:grid;place-items:center;background:rgba(5,7,20,.76);padding:10px;z-index:6}#zfo[hidden]{display:none}
+.zp{width:min(600px,100%);max-height:100%;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;color:var(--text)}.zp h3{font-size:1.2rem;margin-bottom:4px}
+.zr2{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.zp button{padding:7px 12px;border-radius:11px;border:1px solid var(--line);background:var(--surface2);color:var(--text);font-weight:600;margin:2px}.zp button:disabled{opacity:.4}.zp .pri{background:var(--accent);border-color:var(--accent);color:#1a0610}
+.zw{display:inline-block;width:26px;height:26px;border-radius:50%;padding:0!important;border:2px solid #fff!important}
+#zfr{position:absolute;inset:0;z-index:9;background:#0e1024;display:none;place-items:center;text-align:center;font-size:20px;font-weight:700;padding:20px}@media(orientation:portrait){#zfr{display:grid}}`;document.head.appendChild(css);
+const root=document.createElement("div");root.id="v-zf";root.hidden=true;
+root.innerHTML='<canvas id="zfc"></canvas><div id="zfh"><div><b id="hm"></b></div><div>⛽ <span id="hf"></span><div class="zb"><i id="bf" style="background:#ffb300"></i></div></div><div>⚡ Stamina<div class="zb"><i id="bs" style="background:#6ff0b0"></i></div></div><div>🔧 Kondisi<div class="zb"><i id="bh" style="background:#ff5a8a"></i></div></div></div><canvas id="zfm" width="232" height="232"></canvas><div id="zfn"></div><div id="zfbt"><button id="zP">📱</button><button id="zV">👁</button><button id="zS">💾</button><button id="zX">✕</button></div><div id="zfj"><div id="zfk"></div></div><button class="zr" id="zfH">📯</button><button class="zr" id="zfB">🚀</button><button id="zfA"></button><div id="zfsp">0<small>km/h</small></div><div id="zft"></div><div id="zfp"><div class="isl"></div><div class="sb"><span id="pt">9:41</span><span>5G ▂▄▆ 🔋</span></div><div id="pb"></div><div class="tb"><button data-t="o">🍔<small>Order</small></button><button data-t="m">🗺️<small>Peta</small></button><button data-t="w">💰<small>Dompet</small></button><button data-t="s">🏍️<small>Status</small></button></div><i class="hi"></i></div><div id="zfo" hidden></div><div id="zfr">↻ Putar HP ke mode landscape untuk bermain</div>';
+document.body.appendChild(root);root.oncontextmenu=e=>e.preventDefault();
+
+let S,A=null,offs=[],sc,cam,rd,bikeG,hb,cars=[],bcn,pv=null,pvOn=0,pvc,W=1,H=1,spd=0,thr=0,boost=0,cv3=0,PT="o",phOpen=0,pause=1,raf=0,last=0,acc=0,joy={x:0,y:0},zone=null,toastT=0,cd=0,TI=0,SV=null,roll=0,sel=0,keys={},tow=0,ready=0,tt=0;
+const MDm=()=>S.mods[S.cur],tank=()=>BK[S.cur].tk*(1+.15*MDm().t);
+const fresh=()=>{const p=pz(1,1);return{m:50000,day:1,own:[1,0,0,0,0],cur:0,mods:BK.map(()=>({c:null,kn:0,ne:0,vg:0,e:0,t:0,b:0})),hl:0,fuel:4,st:100,hp:100,rate:4.5,n:0,tot:0,x:p.x,z:p.z,hd:-Math.PI/2}};
+const save=()=>{if(S)try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const toast=s=>{const t=$$("#zft");t.textContent=s;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),2600)};
+const mo=h=>{const o=$$("#zfo");o.innerHTML=h;o.hidden=false;pause=1;const c=$$("#zpv");if(c&&pv){c.replaceWith(pvc);pvOn=1}else pvOn=0},mc=()=>{$$("#zfo").hidden=true;pvOn=0;pause=phOpen?1:0};
+
+/* ===== AUDIO ===== */
+let ac,eo,eg,ef;
+function aud(){try{if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();eo=ac.createOscillator();eo.type="sawtooth";ef=ac.createBiquadFilter();ef.type="lowpass";eg=ac.createGain();eg.gain.value=0;eo.connect(ef);ef.connect(eg);eg.connect(ac.destination);eo.start()}ac.resume()}catch(e){}}
+function eng(){if(!ac)return;const s=Math.abs(spd),k=MDm().kn?1.25:1;eo.frequency.value=(38+s*2.4)*k;ef.frequency.value=300+s*14;eg.gain.value=pause?0:.03+.05*Math.min(1,Math.abs(thr)+(s>1?.3:0))*(MDm().kn?1.4:1)}
+
+/* ===== MODEL MOTOR ===== */
+function mkBike(bk,md){const g=new THREE.Group(),M=(c,e)=>new THREE.MeshLambertMaterial({color:c,emissive:e||0}),B=(w,h,d,c,x,y,z,e)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c,e));m.position.set(x,y,z);g.add(m);return m};
+ const col=md.c||bk.c,wr=bk.wr,L=bk.len;
+ [-1,1].forEach(s=>{const w=new THREE.Mesh(new THREE.CylinderGeometry(wr,wr,.14,16),M("#151515"));w.rotation.z=Math.PI/2;w.position.set(0,wr,s*L*.42);g.add(w);const r=new THREE.Mesh(new THREE.CylinderGeometry(wr*.62,wr*.62,.16,12),M(md.vg?"#ffc107":"#b0bec5"));r.rotation.z=Math.PI/2;r.position.copy(w.position);g.add(r)});
+ B(.3,.12,L*.7,"#263238",0,wr+.1,0);B(.42,.32,L*.38,col,0,wr+.5,-.1);B(.36,.1,.7,"#212121",0,wr+.72,.4);
+ if(bk.ty=="s")B(.5,.45,.6,col,0,wr+.6,-L*.3);else B(.5,.55,.3,col,0,wr+.5,-L*.33);
+ B(.9,.05,.05,"#222",0,wr+1,-L*.34);B(.22,.18,.2,"#fff8c4",0,wr+.8,-L*.42,"#ffee88");B(.15,.12,.1,"#ff1744",0,wr+.6,L*.5,"#ff1744");
+ const ex=new THREE.Mesh(new THREE.CylinderGeometry(.06,.07,md.kn?.9:.6,8),M(md.kn?"#cfd8dc":"#5d5d5d"));ex.rotation.x=Math.PI/2;ex.position.set(.26,wr+.12,.5);g.add(ex);
+ B(.5,.45,.5,"#00a86b",0,wr+1.05,L*.45);B(.34,.55,.25,"#00a86b",0,wr+1.05,.1);
+ const h=new THREE.Mesh(new THREE.SphereGeometry(.17,10,8),M("#00a86b"));h.position.set(0,wr+1.5,.05);g.add(h);
+ if(md.ne){const c=md.ne==1?"#00e5ff":"#ff2bd6",n=B(.5,.02,L*.8,c,0,.05,0,c);n.material.transparent=true;n.material.opacity=.85}
+ return g}
+function mkHB(){const g=new THREE.Group(),M=c=>new THREE.MeshLambertMaterial({color:c}),A=(geo,c,x,y,z,rx)=>{const m=new THREE.Mesh(geo,M(c));m.position.set(x,y,z);if(rx)m.rotation.x=rx;g.add(m)};
+ A(new THREE.BoxGeometry(1.1,.05,.06),"#222",0,-.42,-.8);[-.5,.5].forEach(x=>{A(new THREE.CylinderGeometry(.04,.04,.25,8),"#111",x,-.42,-.78,Math.PI/2);A(new THREE.BoxGeometry(.12,.1,.2),"#e0ac84",x*.9,-.4,-.7);A(new THREE.BoxGeometry(.2,.12,.03),"#9ec9e8",x*1.5,-.2,-.8)});
+ A(new THREE.BoxGeometry(.3,.12,.1),"#111",0,-.38,-.85);g.position.set(0,0,0);return g}
+
+/* ===== DUNIA ===== */
+const solid=(x,z)=>{if(x<-14||z<-14||x>SZ+14||z>SZ+14)return 1;const i=Math.floor(x/P),j=Math.floor(z/P);if(i<0||j<0||i>=K||j>=K)return 0;const lx=x-i*P,lz=z-j*P;return lx>12&&lx<P-12&&lz>12&&lz<P-12};
+function label(t,c){const v=document.createElement("canvas");v.width=256;v.height=64;const g=v.getContext("2d");g.fillStyle="rgba(10,12,30,.85)";g.fillRect(0,0,256,64);g.fillStyle=c;g.fillRect(0,0,256,7);g.fillStyle="#fff";g.font="700 24px sans-serif";g.textAlign="center";g.fillText(t,128,42);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(v),fog:false}));s.scale.set(18,4.5,1);return s}
+function world(){
+ sc=new THREE.Scene();sc.background=new THREE.Color(0xb9c8dc);sc.fog=new THREE.Fog(0xb9c8dc,70,430);
+ sc.add(new THREE.HemisphereLight(0xffffff,0x667788,.95));const dl=new THREE.DirectionalLight(0xfff2d6,.8);dl.position.set(120,200,80);sc.add(dl);
+ const gr=new THREE.Mesh(new THREE.PlaneGeometry(SZ+1600,SZ+1600),new THREE.MeshLambertMaterial({color:0x3a3d44}));gr.rotation.x=-Math.PI/2;gr.position.set(SZ/2,0,SZ/2);sc.add(gr);
+ const mat=c=>new THREE.MeshLambertMaterial({color:c}),dummy=new THREE.Object3D();
+ const wc=document.createElement("canvas");wc.width=wc.height=64;const g=wc.getContext("2d");g.fillStyle="#9aa7b8";g.fillRect(0,0,64,64);for(let y=0;y<4;y++)for(let x=0;x<4;x++){g.fillStyle=Math.random()<.3?"#ffe9a8":"#34475f";g.fillRect(x*16+3,y*16+4,10,9)}
+ const wt=new THREE.CanvasTexture(wc);wt.wrapS=wt.wrapT=THREE.RepeatWrapping;
+ const HS=[12,26,50],cls=[[],[],[]],tones=["#ffffff","#f3e9dc","#dfe8f5","#f5d9d0","#e3f0e0"];
+ const plate=new THREE.InstancedMesh(new THREE.BoxGeometry(86,.5,86),mat(0xffffff),K*K);let pi=0;
+ for(let i=0;i<K;i++)for(let j=0;j<K;j++){const cx0=i*P+P/2,cz0=j*P+P/2,park=(i==4&&j==4);dummy.position.set(cx0,.25,cz0);dummy.updateMatrix();plate.setMatrixAt(pi,dummy.matrix);plate.setColorAt(pi++,new THREE.Color(park?"#3f7d3a":"#8d8b86"));
+  if(!park)for(let a=0;a<2;a++)for(let b=0;b<2;b++){const d=Math.hypot(i-3.5,j-3.5),c=d<2.5?(Math.random()<.7?2:1):d<4?(Math.random()<.6?1:0):(Math.random()<.7?0:1);cls[c].push([cx0-21.5+a*43,cz0-21.5+b*43,tones[ri(5)]])}}
+ sc.add(plate);
+ cls.forEach((L,c)=>{if(!L.length)return;const geo=new THREE.BoxGeometry(40,HS[c],40),uv=geo.attributes.uv;for(let k=0;k<uv.count;k++){uv.setXY(k,uv.getX(k)*2.5,uv.getY(k)*HS[c]/16)}
+  const m=new THREE.InstancedMesh(geo,new THREE.MeshLambertMaterial({map:wt}),L.length);L.forEach((q,k)=>{dummy.position.set(q[0],HS[c]/2,q[1]);dummy.updateMatrix();m.setMatrixAt(k,dummy.matrix);m.setColorAt(k,new THREE.Color(q[2]))});sc.add(m)});
+ const dn=[];for(let r=0;r<=K;r++)for(let s=0;s<SZ;s+=14){dn.push([s+4,r*P,0],[r*P,s+4,1])}
+ const dm=new THREE.InstancedMesh(new THREE.BoxGeometry(6,.04,.5),new THREE.MeshBasicMaterial({color:0xe8e8e8}),dn.length);dn.forEach((q,k)=>{dummy.position.set(q[2]?q[0]:q[0],.03,q[1]);dummy.rotation.y=q[2]?Math.PI/2:0;dummy.updateMatrix();dm.setMatrixAt(k,dummy.matrix)});dummy.rotation.y=0;sc.add(dm);
+ const mx=PO.map(o=>({...o,...pz(o.i,o.j)})).concat(RS.map(r=>({n:r[0],c:"#ff9800",...pz(r[1],r[2])})));
+ mx.forEach(o=>{const a=new THREE.Mesh(new THREE.BoxGeometry(34,2,7),mat(o.c));a.position.set(o.x,9,o.z+10);sc.add(a);const l=label(o.n,o.c);l.position.set(o.x,15,o.z+10);sc.add(l);const rg=new THREE.Mesh(new THREE.RingGeometry(7,9,24),new THREE.MeshBasicMaterial({color:o.c,side:2,transparent:true,opacity:.7}));rg.rotation.x=-Math.PI/2;rg.position.set(o.x,.08,o.z);sc.add(rg)});
+ const mn=new THREE.Group(),w=mat(0xf5f5f5);const o1=new THREE.Mesh(new THREE.BoxGeometry(30,4,30),w);o1.position.y=2;const o2=new THREE.Mesh(new THREE.BoxGeometry(6,60,6),w);o2.position.y=34;const fl=new THREE.Mesh(new THREE.SphereGeometry(3.2,10,8),new THREE.MeshBasicMaterial({color:0xffc107}));fl.position.y=67;mn.add(o1,o2,fl);mn.position.set(4*P+P/2,0,4*P+P/2);sc.add(mn);
+ bcn=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.2,140,12,1,true),new THREE.MeshBasicMaterial({color:0xff9800,transparent:true,opacity:.4,fog:false,side:2}));bcn.visible=false;sc.add(bcn);
+ const CC=["#f57c00","#1565c0","#c62828","#eceff1","#2e7d32","#fbc02d"];
+ for(let k=0;k<18;k++){const c=new THREE.Group(),m=new THREE.Mesh(new THREE.BoxGeometry(2.2,1,4.4),mat(CC[k%6]));m.position.y=.9;const t=new THREE.Mesh(new THREE.BoxGeometry(1.9,.8,2.4),mat("#cfd8dc"));t.position.set(0,1.7,-.2);c.add(m,t);sc.add(c);cars.push({g:c,ax:k%2,ln:1+ri(K-1),s:rn(0,SZ),v:(Math.random()<.5?-1:1)*rn(8,16)})}
+ cam=new THREE.PerspectiveCamera(70,1,.2,520);cam.rotation.order="YXZ";sc.add(cam);hb=mkHB();cam.add(hb);
+ const ps=new THREE.Scene();ps.add(new THREE.HemisphereLight(0xffffff,0x556677,1.1));const pd=new THREE.DirectionalLight(0xffffff,.7);pd.position.set(3,5,4);ps.add(pd);const pc=new THREE.PerspectiveCamera(40,260/150,.1,50);pc.position.set(0,1.6,4.2);pc.lookAt(0,.8,0);
+ pvc=document.createElement("canvas");pvc.id="zpv";pvc.style.cssText="width:260px;height:150px;display:block;margin:6px auto;border-radius:14px;background:#12162f";
+ pv={r:new THREE.WebGLRenderer({canvas:pvc,antialias:true}),s:ps,c:pc,g:null};pv.r.setSize(260,150,false);pv.r.setPixelRatio(1)}
+function pvSet(i,md){if(pv.g)pv.s.remove(pv.g);pv.g=mkBike(BK[i],md);pv.s.add(pv.g)}
+function setBike(){if(bikeG)sc.remove(bikeG);bikeG=mkBike(BK[S.cur],MDm());bikeG.visible=!!cv3;sc.add(bikeG);S.fuel=Math.min(S.fuel,tank())}
+
+/* ===== PESANAN, GPS, PETA ===== */
+function offers(){const o=[];while(o.length<3){const r=ri(RS.length),a=pz(RS[r][1],RS[r][2]),ci=ri(K),cj=ri(K),b=pz(ci,cj),d=Math.abs(a.x-b.x)+Math.abs(a.z-b.z);if(d<150)continue;const pk=Math.abs(a.x-S.x)+Math.abs(a.z-S.z);o.push({r,b,nm:ST[(ci+cj*3)%ST.length]+" no."+(1+ri(60)),d,pay:Math.round((15000+d*32+pk*8)/500)*500,tl:Math.round(30+(d+pk)/16)})}return o}
+const tgt=()=>A?(A.ph?A.b:pz(RS[A.r][1],RS[A.r][2])):null;
+function route(a,b){const g=v=>Math.round(v/P)*P,ia={x:g(a.x),z:g(a.z)},ib={x:g(b.x),z:g(b.z)};return[a,ia,{x:ib.x,z:ia.z},ib,b]}
+function drawMap(c,full){const w=c.width,g=c.getContext("2d");g.clearRect(0,0,w,w);g.save();let s;
+ if(full){s=w/(SZ+60);g.scale(s,s);g.translate(30,30)}else{s=w/360;g.translate(w/2,w/2);g.scale(s,s);g.rotate(S.hd);g.translate(-S.x,-S.z)}
+ g.fillStyle="#1b2235";g.fillRect(-2000,-2000,5000,5000);g.fillStyle="#2a3452";for(let i=0;i<K;i++)for(let j=0;j<K;j++)g.fillRect(i*P+12,j*P+12,P-24,P-24);
+ g.fillStyle="#2e5b34";g.fillRect(4*P+12,4*P+12,P-24,P-24);
+ PO.forEach(o=>{const p=pz(o.i,o.j);g.fillStyle=o.c;g.beginPath();g.arc(p.x,p.z,full?14:9,0,7);g.fill()});
+ RS.forEach(r=>{const p=pz(r[1],r[2]);g.fillStyle="#ff9800";g.beginPath();g.arc(p.x,p.z,full?11:7,0,7);g.fill()});
+ const t=tgt();if(t){const R=route({x:S.x,z:S.z},t);g.strokeStyle="#29d6ff";g.lineWidth=full?9:6;g.lineJoin="round";g.beginPath();R.forEach((p,i)=>i?g.lineTo(p.x,p.z):g.moveTo(p.x,p.z));g.stroke();g.fillStyle=A.ph?"#6ff0b0":"#ff9800";g.beginPath();g.arc(t.x,t.z,full?20:12,0,7);g.fill();g.strokeStyle="#fff";g.lineWidth=3;g.stroke()}
+ if(full){g.fillStyle="#fff";g.beginPath();g.arc(S.x,S.z,16,0,7);g.fill()}
+ g.restore();if(!full){g.fillStyle="#fff";g.beginPath();g.moveTo(w/2,w/2-12);g.lineTo(w/2+8,w/2+9);g.lineTo(w/2-8,w/2+9);g.fill()}}
+
+/* ===== LOGIKA ===== */
+function done(){const late=A.tl<0,tip=late?0:Math.min(10000,Math.round(A.tl*100)),pay=Math.round(A.pay*(late?.5:1))+tip;S.m+=pay;S.tot+=pay;S.n++;S.rate=cl(S.rate*.85+(late?2.5:5)*.15,1,5);AU.coin();toast((late?"⏰ Telat! ":"✅ Tepat waktu! ")+"+"+fm(pay));A=null;offs=offers();save()}
+function fail(){S.m=Math.max(0,S.m-10000);S.rate=cl(S.rate-.3,1,5);toast("❌ Pesanan hangus, denda Rp 10.000");AU.lose();A=null;offs=offers()}
+function upd(dt){const bk=BK[S.cur],md=MDm();cd-=dt;
+ thr=-joy.y+(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);const stx=joy.x+((keys.d||keys.arrowright)?1:0)-((keys.a||keys.arrowleft)?1:0);
+ const fat=S.st<=0?.35:S.st<20?.75:1,bo=boost&&S.st>3&&thr>0?1.3:1,vm=bk.v*.5*(1+.07*md.e+(md.kn?.05:0))*fat*bo,ok=S.fuel>0&&S.hp>0;
+ const tg=!ok?0:thr>.08?vm*Math.min(1,thr):thr<-.08?vm*thr*.2:0,dv=tg-spd;spd+=Math.sign(dv)*Math.min(Math.abs(dv),(dv>0?bk.a*1.6:(thr<-.08?40:5))*dt);
+ const sf=Math.min(1,Math.abs(spd)/6)/(1+Math.abs(spd)/45);S.hd-=stx*1.7*bk.h*(1+.1*md.b)*sf*dt*(spd<0?-1:1);
+ const nx=S.x-Math.sin(S.hd)*spd*dt,nz=S.z-Math.cos(S.hd)*spd*dt;
+ if(solid(nx,nz)){if(cd<=0&&Math.abs(spd)>3){S.hp=Math.max(0,S.hp-Math.abs(spd)*.35);AU.lose();cd=.8}spd*=-.25}else{S.fuel=Math.max(0,S.fuel-Math.hypot(nx-S.x,nz-S.z)/bk.ef);S.x=nx;S.z=nz}
+ S.st=Math.max(0,S.st-dt*(.12+Math.abs(spd)/50*.12+(bo>1?1.2:0)));
+ for(const c of cars){c.s+=c.v*dt;if(c.s>SZ)c.s=0;if(c.s<0)c.s=SZ;const off=Math.sign(c.v)*4,px=c.ax?c.ln*P+off:c.s,pzz=c.ax?c.s:c.ln*P+off;c.g.position.set(px,0,pzz);c.g.rotation.y=c.ax?(c.v>0?Math.PI:0):(c.v>0?-Math.PI/2:Math.PI/2);
+  if(cd<=0&&Math.hypot(px-S.x,pzz-S.z)<2.8){S.hp=Math.max(0,S.hp-10-Math.abs(spd)*.3);spd*=-.3;cd=1;AU.lose();toast("💥 Tabrakan!")}}
+ zone=null;PO.forEach(o=>{const p=pz(o.i,o.j);if(Math.hypot(p.x-S.x,p.z-S.z)<9)zone=o});
+ if(A){A.tl-=dt;const t=tgt();if(Math.hypot(t.x-S.x,t.z-S.z)<9&&Math.abs(spd)<6){if(!A.ph){A.ph=1;toast("🛍️ Pesanan diambil. Antar ke "+A.nm);AU.beep()}else done()}else if(A.tl<-40)fail()}
+ if(!tow&&(S.fuel<=0||S.hp<=0)&&Math.abs(spd)<.6){tow=1;menu("tow")}
+ if(S.fuel>.1&&S.hp>0)tow=0}
+function hud(){const bk=BK[S.cur];$$("#hm").textContent=fm(S.m);$$("#hf").textContent=S.fuel.toFixed(1)+" / "+tank().toFixed(1)+" L";$$("#bf").style.width=S.fuel/tank()*100+"%";$$("#bs").style.width=S.st+"%";$$("#bh").style.width=S.hp+"%";
+ $$("#zfsp").firstChild.textContent=Math.round(Math.abs(spd)*2*(1));
+ const n=$$("#zfn"),t=tgt();if(t){const d=Math.round(Math.hypot(t.x-S.x,t.z-S.z)),R=route({x:S.x,z:S.z},t),nx=R.find((p,i)=>i&&Math.hypot(p.x-S.x,p.z-S.z)>25)||t,dx=nx.x-S.x,dz=nx.z-S.z,fx=-Math.sin(S.hd),fz=-Math.cos(S.hd),ang=Math.atan2(dx*-fz+dz*fx,dx*fx+dz*fz);
+  n.style.display="block";n.innerHTML=`<span style="display:inline-block;transform:rotate(${ang}rad);color:#29d6ff">▲</span> ${A.ph?"Antar: "+A.nm:"Ambil: "+RS[A.r][0]}<br><b>${d} m</b> · ⏱ <b style="color:${A.tl<0?"#ff6b6b":"#fff"}">${A.tl<0?"-":""}${mmss(Math.abs(A.tl))}</b> · ${fm(A.pay)}`;
+  bcn.visible=true;bcn.position.set(t.x,70,t.z);bcn.material.color.set(A.ph?0x6ff0b0:0xff9800)}else{n.style.display="none";bcn.visible=false}
+ const a=$$("#zfA");if(zone&&Math.abs(spd)<5){a.style.display="block";a.textContent="Masuk "+zone.n}else a.style.display="none";
+ drawMap($$("#zfm"),0);$$("#pt").textContent=new Date().toTimeString().slice(0,5);if(phOpen&&PT=="m"){const c=$$("#zm2");c&&drawMap(c,1)}}
+function loop(n){raf=requestAnimationFrame(loop);const dt=Math.min(.05,(n-last)/1000);last=n;tt+=dt;if(!S)return;if(!pause)upd(dt);eng();
+ const fx=-Math.sin(S.hd),fz=-Math.cos(S.hd);roll+=(-(joy.x)*.1*Math.min(1,Math.abs(spd)/20)-roll)*Math.min(1,dt*6);
+ if(cv3){cam.position.set(S.x-fx*6.5,3.3,S.z-fz*6.5);cam.rotation.set(-.22,S.hd,0)}else{const sh=S.st<20?Math.sin(tt*30)*.012:0;cam.position.set(S.x+fx*.35,1.7+Math.sin(tt*18)*Math.abs(spd)*.0015,S.z+fz*.35);cam.rotation.set(sh,S.hd,roll)}
+ cam.fov=68+Math.min(14,Math.abs(spd)*.2);cam.updateProjectionMatrix();bikeG.position.set(S.x,0,S.z);bikeG.rotation.set(0,S.hd,roll*2,"YXZ");bikeG.visible=!!cv3;hb.visible=!cv3;
+ rd.render(sc,cam);if(pvOn&&pv.g){pv.g.rotation.y+=dt*.9;pv.r.render(pv.s,pv.c)}
+ if(!pause&&(acc+=dt)>.1){acc=0;hud()}else if(pause&&(acc+=dt)>.3){acc=0;hud()}}
+
+/* ===== MENU ===== */
+function menu(k){const md=MDm(),bk=BK[S.cur],rows=[];let h="";
+ if(k=="tow"){const why=S.fuel<=0?"Bensin habis":"Motor rusak berat";mo(`<div class="zp"><h3>🚨 Mogok! ${why}</h3><p>Panggil derek ke bengkel: Rp 40.000. Bensin dan kondisi motor dipulihkan sedikit.</p><button class="pri" data-a="tow">Panggil derek</button></div>`);return}
+ if(k=="home"){const H0=HM[S.hl],nx=HM[S.hl+1];mo(`<div class="zp"><h3>🏠 ${H0[0]}</h3><p>Sewa/tagihan Rp ${H0[1].toLocaleString("id-ID")} per hari · pemulihan stamina ${H0[2]*100}% · Hari ke-${S.day}</p><button class="pri" data-a="sl">😴 Tidur (bayar ${fm(H0[1])})</button>${nx?`<button data-a="uh" ${S.m<nx[3]?"disabled":""}>⬆ Pindah ke ${nx[0]} · ${fm(nx[3])}</button>`:""}<button data-a="x">Tutup</button></div>`)}
+ else if(k=="spbu"){const need=tank()-S.fuel;mo(`<div class="zp"><h3>⛽ SPBU</h3><p>Bensin Rp 10.500/L · Tangki ${S.fuel.toFixed(1)}/${tank().toFixed(1)} L</p><button class="pri" data-a="fu" ${need<.05||S.m<10500?"disabled":""}>Isi penuh · ${fm(need*10500)}</button><button data-a="x">Tutup</button></div>`)}
+ else if(k=="warteg"){mo(`<div class="zp"><h3>🍛 Warteg Bahari</h3><p>Stamina ${Math.round(S.st)}%</p><button data-a="e0" ${S.m<18000?"disabled":""}>Nasi ayam · Rp 18.000 · +30</button><button data-a="e1" ${S.m<8000?"disabled":""}>Kopi · Rp 8.000 · +12</button><button data-a="e2" ${S.m<5000?"disabled":""}>Es teh · Rp 5.000 · +8</button><button data-a="x">Tutup</button></div>`)}
+ else if(k=="dealer"){pvSet(sel,S.mods[sel]);mo(`<div class="zp"><h3>🏍️ Dealer Motor</h3><canvas id="zpv"></canvas>${BK.map((b,i)=>`<div class="zr2"><div><b>${b.n}</b><br><small>${b.v} km/h · tangki ${b.tk} L · ${b.ef} u/L · ${b.p?fm(b.p):"Gratis (punya)"}</small></div><div><button data-a="v${i}">Lihat</button>${S.own[i]?`<button class="${i==S.cur?"":"pri"}" data-a="u${i}" ${i==S.cur?"disabled":""}>${i==S.cur?"Dipakai":"Pakai"}</button>`:`<button class="pri" data-a="b${i}" ${S.m<b.p?"disabled":""}>Beli</button>`}</div></div>`).join("")}<button data-a="x">Tutup</button></div>`)}
+ else if(k=="bengkel"){pvSet(S.cur,md);const up=[["e","Mesin","+7% kecepatan"],["t","Tangki","+15% kapasitas"],["b","Ban & suspensi","+10% handling"]];
+  mo(`<div class="zp"><h3>🔧 Bengkel · ${bk.n}</h3><canvas id="zpv"></canvas><div class="zr2"><span>Kondisi ${Math.round(S.hp)}%</span><button class="pri" data-a="rp" ${S.hp>=100||S.m<(100-S.hp)*1500?"disabled":""}>Servis · ${fm((100-S.hp)*1500)}</button></div>${up.map(u=>{const lv=md[u[0]],c=80000*(lv+1);return`<div class="zr2"><span>${u[1]} Lv ${lv}/3 <small>${u[2]}</small></span><button data-a="g${u[0]}" ${lv>=3||S.m<c?"disabled":""}>${lv>=3?"Maks":fm(c)}</button></div>`}).join("")}<h3 style="margin-top:8px">🎨 Modifan</h3><div class="zr2"><span>Cat (Rp 40.000)</span><span>${MC.map((c,i)=>`<button class="zw" style="background:${c}" data-a="c${i}" ${S.m<40000?"disabled":""}></button>`).join("")}</span></div><div class="zr2"><span>Knalpot racing (+suara +5%)</span><button data-a="kn" ${md.kn||S.m<120000?"disabled":""}>${md.kn?"Terpasang":fm(120000)}</button></div><div class="zr2"><span>Lampu neon</span><span><button data-a="n1" ${S.m<90000?"disabled":""}>Cyan 90rb</button><button data-a="n2" ${S.m<90000?"disabled":""}>Pink 90rb</button></span></div><div class="zr2"><span>Velg emas</span><button data-a="vg" ${md.vg||S.m<60000?"disabled":""}>${md.vg?"Terpasang":fm(60000)}</button></div><button data-a="x">Tutup</button></div>`)}}
+$$("#zfo").onclick=e=>{const b=e.target.closest("[data-a]");if(!b||b.disabled)return;const a=b.dataset.a,i=+a.slice(1),md=MDm(),nx=HM[S.hl+1];
+ if(a=="go"){fs();aud();begin(SV)}else if(a=="new"){fs();aud();begin(null)}else if(a=="out"){window.go("#/games")}else if(a=="x"){mc()}
+ else if(a=="tow"){const p=pz(1,6);S.x=p.x;S.z=p.z;S.hd=-Math.PI/2;spd=0;S.m=Math.max(0,S.m-40000);S.fuel=Math.max(S.fuel,1.5);S.hp=Math.max(S.hp,25);tow=0;mc();AU.buy()}
+ else if(a=="sl"){const H0=HM[S.hl];if(S.m<H0[1]){S.st=Math.min(100,S.st+30);toast("Uang kurang bayar sewa. Tidur di emperan: stamina +30")}else{S.m-=H0[1];S.st=Math.min(100,S.st+100*H0[2]);toast("😴 Hari ke-"+(S.day+1)+" dimulai. Stamina pulih")}S.day++;AU.buy();save();mc()}
+ else if(a=="uh"&&S.m>=nx[3]){S.m-=nx[3];S.hl++;AU.buy();menu("home")}
+ else if(a=="fu"){const c=(tank()-S.fuel)*10500;if(S.m>=c){S.m-=c;S.fuel=tank();AU.buy();menu("spbu")}}
+ else if(a[0]=="e"){const o=[[18000,30],[8000,12],[5000,8]][i];if(S.m>=o[0]){S.m-=o[0];S.st=Math.min(100,S.st+o[1]);AU.buy();menu("warteg")}}
+ else if(a[0]=="v"){sel=i;pvSet(i,S.mods[i])}
+ else if(a[0]=="b"&&S.m>=BK[i].p){S.m-=BK[i].p;S.own[i]=1;S.cur=i;sel=i;setBike();AU.buy();toast("🎉 Beli "+BK[i].n);menu("dealer")}
+ else if(a[0]=="u"){S.cur=i;sel=i;setBike();AU.buy();menu("dealer")}
+ else if(a=="rp"){const c=(100-S.hp)*1500;if(S.m>=c){S.m-=c;S.hp=100;AU.buy();menu("bengkel")}}
+ else if(a[0]=="g"){const k=a[1],c=80000*(md[k]+1);if(md[k]<3&&S.m>=c){S.m-=c;md[k]++;setBike();AU.buy();menu("bengkel")}}
+ else if(a[0]=="c"){S.m-=40000;md.c=MC[i];setBike();AU.buy();menu("bengkel")}
+ else if(a=="kn"||a=="vg"){const c=a=="kn"?120000:60000;if(S.m>=c){S.m-=c;md[a]=1;setBike();AU.buy();menu("bengkel")}}
+ else if(a[0]=="n"){S.m-=90000;md.ne=i;setBike();AU.buy();menu("bengkel")}};
+$$("#zfa");
+$$("#zfA").onclick=()=>{if(zone&&S&&!pause)menu(zone.k)};
+
+/* ===== HP (iPhone 18) ===== */
+function ph(){const b=$$("#pb");document.querySelectorAll("#zfp .tb button").forEach(x=>x.classList.toggle("on",x.dataset.t==PT));let h="";
+ if(PT=="o"){h=A?`<div class="cd"><b>${RS[A.r][0]}</b><br>→ ${A.nm}<br>${A.ph?"Antar ke pelanggan":"Ambil di restoran"} · ⏱ ${mmss(A.tl)}<br><b>${fm(A.pay)}</b><button data-p="cx">Batalkan (−Rp 5.000)</button></div>`:`<b>Pesanan masuk</b><br>`+offs.map((o,i)=>`<div class="cd"><b>${RS[o.r][0]}</b><br><small>→ ${o.nm}</small><br>${Math.round(o.d)} m · ⏱ ${mmss(o.tl)}<br><b>${fm(o.pay)}</b><button data-p="a${i}">Terima</button></div>`).join("")}
+ else if(PT=="m")h='<canvas id="zm2" width="280" height="280" style="width:100%;border-radius:12px"></canvas><small>🟠 restoran · garis cyan rute GPS</small>';
+ else if(PT=="w")h=`<div class="cd">Saldo<br><b style="font-size:16px">${fm(S.m)}</b></div><div class="cd">Total pendapatan ${fm(S.tot)}<br>Order selesai ${S.n}<br>Rating ⭐ ${S.rate.toFixed(2)}<br>Hari ke-${S.day} · tagihan rumah ${fm(HM[S.hl][1])}/hari</div>`;
+ else h=`<div class="cd"><b>${BK[S.cur].n}</b><br>Kondisi ${Math.round(S.hp)}% · Bensin ${S.fuel.toFixed(1)}/${tank().toFixed(1)} L<br>Mesin ${MDm().e} · Tangki ${MDm().t} · Ban ${MDm().b}</div><div class="cd">🏠 ${HM[S.hl][0]}<br>Stamina ${Math.round(S.st)}%</div>`;
+ b.innerHTML=h}
+$$("#zfp").onclick=e=>{const t=e.target.closest("[data-t]");if(t){PT=t.dataset.t;ph();return}const p=e.target.closest("[data-p]");if(!p)return;const a=p.dataset.p;
+ if(a=="cx"){S.m=Math.max(0,S.m-5000);S.rate=cl(S.rate-.1,1,5);A=null;offs=offers()}else{const o=offs.splice(+a.slice(1),1)[0];A={...o,ph:0};AU.beep();toast("Order diterima. Menuju "+RS[o.r][0])}ph()};
+const tglPhone=v=>{phOpen=v===undefined?!phOpen:v;$$("#zfp").style.display=phOpen?"flex":"none";pause=phOpen||!$$("#zfo").hidden?1:0;if(phOpen)ph()};
+
+/* ===== START / ROUTER ===== */
+async function fs(){try{if(!document.fullscreenElement){if(root.requestFullscreen)await root.requestFullscreen({navigationUI:"hide"});else if(root.webkitRequestFullscreen)root.webkitRequestFullscreen()}}catch(e){}try{await screen.orientation.lock("landscape")}catch(e){}}
+function resize(){W=innerWidth;H=innerHeight;if(!rd)return;rd.setSize(W,H,false);cam.aspect=W/H;cam.updateProjectionMatrix()}
+function begin(sv){S=Object.assign(fresh(),sv||{});if(!sv)try{localStorage.removeItem(KEY)}catch(e){}spd=0;A=null;tow=0;sel=S.cur;setBike();offs=offers();mc();phOpen=0;$$("#zfp").style.display="none";save();clearInterval(TI);TI=setInterval(()=>{save();if(!A&&offs.length<3&&!pause){offs.push(offers()[0]);AU.ping();toast("📲 Pesanan baru masuk!")}},15000)}
+function init(){if(!ready){ready=1;rd=new THREE.WebGLRenderer({canvas:$$("#zfc"),antialias:false,powerPreference:"high-performance"});rd.setPixelRatio(Math.min(devicePixelRatio||1,1.5));world();S=fresh();setBike()}
+ resize();try{SV=JSON.parse(localStorage.getItem(KEY))}catch(e){SV=null}
+ mo(`<div class="zp"><h3>🛵 ZUXFOOD Driver Jakarta</h3><p>POV 3D open world. Joystick kiri: gas/rem (atas/bawah) dan belok (kiri/kanan). 🚀 boost memakai stamina, 📯 klakson, 👁 ganti kamera, 📱 buka HP untuk terima orderan (game berhenti saat HP dibuka). Berhenti di lingkaran restoran lalu di rumah pelanggan sebelum waktu habis. Awas bensin, stamina dan tabrakan.</p>${SV?`<button class="pri" data-a="go">Lanjutkan · Hari ${SV.day} · ${fm(SV.m)}</button><button data-a="new">Mulai baru</button>`:`<button class="pri" data-a="new">Mulai bermain</button>`}<button data-a="out">← Katalog</button></div>`);
+ cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop)}
+function openZ(){["home","games","taxi","play","rw"].forEach(x=>{const e=$$("#v-"+x);e&&(e.hidden=true)});if(window.playClose)window.playClose();root.hidden=false;document.title="ZUXFOOD Driver — ZUX Games";
+ if(window.THREE)init();else{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";s.onload=init;s.onerror=()=>alert("Gagal memuat Three.js. Periksa koneksi internet.");document.head.appendChild(s)}}
+function closeZ(){if(root.hidden)return;save();root.hidden=true;cancelAnimationFrame(raf);clearInterval(TI);pause=1;eg&&(eg.gain.value=0);try{document.fullscreenElement&&document.exitFullscreen();screen.orientation.unlock()}catch(e){}}
+const jb=$$("#zfj"),kn=$$("#zfk");let jid=null;
+const jm=e=>{const r=jb.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),d=Math.hypot(dx,dy),m=Math.min(d,46),nx=d?dx/d:0,ny=d?dy/d:0;joy.x=nx*m/46;joy.y=ny*m/46;kn.style.transform=`translate(${nx*m}px,${ny*m}px)`};
+jb.onpointerdown=e=>{jid=e.pointerId;jb.setPointerCapture(jid);jm(e)};jb.onpointermove=e=>{if(e.pointerId===jid)jm(e)};jb.onpointerup=jb.onpointercancel=()=>{jid=null;joy.x=joy.y=0;kn.style.transform=""};
+const bb=$$("#zfB");bb.onpointerdown=()=>boost=1;bb.onpointerup=bb.onpointercancel=bb.onpointerleave=()=>boost=0;
+$$("#zfH").onclick=()=>AU.horn();$$("#zP").onclick=()=>tglPhone();$$("#zV").onclick=()=>cv3=cv3?0:1;$$("#zS").onclick=()=>{save();toast("Progres tersimpan 💾")};$$("#zX").onclick=()=>window.go("#/games");
+addEventListener("keydown",e=>{if(!root.hidden)keys[e.key.toLowerCase()]=1});addEventListener("keyup",e=>{keys[e.key.toLowerCase()]=0});
+addEventListener("resize",resize);addEventListener("pagehide",save);
+const og=window.go;
+window.go=function(h,p){h=h||"#home";if(/^#\/play\/zx-food/.test(h)){if(p!==false)try{history.pushState(null,"",h)}catch(e){}openZ();window.scrollTo(0,0);return}closeZ();og(h,p)};
+if(/^#\/play\/zx-food/.test(location.hash))window.go(location.hash,false);
+})();
 </script>
 </body>
 </html>
